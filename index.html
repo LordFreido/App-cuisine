@@ -137,13 +137,13 @@ function card(r){
 }
 function list(arr){return arr.length?arr.map(card).join(""):'<div class="empty">Rien ici pour l\'instant.</div>'}
 function homeH(){
-  var h='<h1>🍳 Mes recettes</h1><input id="q" type="search" placeholder="Rechercher (nom ou ingrédient)" value="'+esc(Q)+'" oninput="srch(this.value)"><div id="res">'+homeBody()+'</div>';
+  var h='<h1>🍳 Mes recettes</h1><input id="q" type="search" placeholder="Rechercher une recette" value="'+esc(Q)+'" oninput="srch(this.value)"><div id="res">'+homeBody()+'</div>';
   return h
 }
 function srch(v){Q=v;document.getElementById("res").innerHTML=homeBody()}
 function homeBody(){
   var q=Q.trim().toLowerCase();
-  if(q)return list(D.recipes.filter(function(r){return (r.title+" "+r.ing).toLowerCase().indexOf(q)>-1}));
+  if(q)return list(D.recipes.filter(function(r){return norm(r.title).indexOf(norm(q))>-1}));
   var h='<div class="grid">';
   h+='<button class="fold" onclick="go(\'folder\',{f:\'fav\'})"><span>⭐</span>Favoris<br><small>'+D.recipes.filter(function(r){return r.fav}).length+' recettes</small></button>';
   h+='<button class="fold" onclick="go(\'folder\',{f:\'all\'})"><span>📖</span>Toutes<br><small>'+D.recipes.length+' recettes</small></button>';
