@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Mes recettes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#faf7f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c1a18" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Recettes">
+<style>
+:root{--bg:#faf7f2;--card:#fff;--tx:#2b2622;--mut:#8a8178;--ac:#d9622b;--bd:#e8e1d6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1a18;--card:#282522;--tx:#f1ebe3;--mut:#9d948a;--bd:#3a3631}}
+:root[data-theme="dark"]{--bg:#1c1a18;--card:#282522;--tx:#f1ebe3;--mut:#9d948a;--bd:#3a3631}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 -apple-system,system-ui,"Segoe UI",sans-serif}
+main{max-width:560px;margin:0 auto;padding:4px 16px 84px}
+h1{font-size:26px;margin:6px 0 12px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:20px 0 8px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.item small,.mut{color:var(--mut)}
+button{font:inherit;border:0;border-radius:12px;padding:12px 16px;background:var(--ac);color:#fff;font-weight:600}
+button.g{background:transparent;color:var(--ac);padding:8px 4px}
+button.d{color:#d33}
+button.s{background:var(--card);color:var(--tx);border:1px solid var(--bd)}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fold{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px;text-align:left;color:var(--tx);font-weight:500}
+.fold span{font-size:30px;display:block}
+.fold small{color:var(--mut);font-weight:400}
+.stepper{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:8px 12px;justify-content:space-between}
+.stepper button{width:44px;height:44px;border-radius:50%;padding:0;font-size:24px}
+.stepper b{font-size:20px}
+ul.ing{list-style:none;padding:0;margin:0}
+ul.ing li{padding:11px 0;border-bottom:1px solid var(--bd);display:flex;gap:10px}
+ul.ing li:last-child{border:0}
+ul.ing li:before{content:"";flex:none;width:20px;height:20px;border:2px solid var(--bd);border-radius:50%;margin-top:2px}
+ul.ing li.k:before{background:var(--ac);border-color:var(--ac)}
+ul.ing li.k{opacity:.45;text-decoration:line-through}
+ul.ing b{color:var(--ac)}
+ol{padding-left:22px;margin:0}ol li{margin-bottom:12px}
+input,textarea,select{width:100%;font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:8px}
+textarea{min-height:130px}
+.hint{color:var(--mut);font-size:13px;margin:-2px 0 10px}
+.empty{text-align:center;color:var(--mut);padding:30px 0}
+.emo{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.emo button{background:var(--card);border:2px solid var(--bd);font-size:24px;padding:6px 10px}
+.emo button.on{border-color:var(--ac)}
+.lk{color:var(--ac);font-weight:600;text-decoration:underline;cursor:pointer}
+.sg{display:flex;flex-wrap:wrap;gap:6px;margin:-2px 0 10px}.sg:empty{display:none}
+.sg button{padding:8px 12px;font-size:14px}
+.sp{margin:0 0 8px}
+.bar{height:8px;background:var(--bd);border-radius:6px;overflow:hidden;margin-bottom:10px}.bar i{display:block;height:100%;background:var(--ac)}
+.ax summary{cursor:pointer;list-style:none}.ax summary::-webkit-details-marker{display:none}
+.ax summary::after{content:"▾";float:right;color:var(--mut)}.ax[open] summary::after{content:"▴"}
+.st2{border-top:1px solid var(--bd);padding-top:8px;margin-top:8px}
+#bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+#bar .in{max-width:560px;margin:0 auto;padding:10px 16px 6px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+#nav{display:flex;gap:6px;overflow-x:auto;min-width:0;flex:1;scrollbar-width:none}#nav::-webkit-scrollbar{display:none}
+.nv{flex:none;background:var(--card);color:var(--tx);border:1px solid var(--bd);padding:9px 14px;font-size:14px;border-radius:20px;font-weight:500;white-space:nowrap}
+#cart{position:relative;flex:none;width:44px;height:44px;border-radius:50%;padding:0;font-size:22px;background:var(--card);border:1px solid var(--bd)}
+#cart.on{border-color:var(--ac);background:var(--bd)}
+#bd{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:var(--ac);color:#fff;font:600 11px/18px sans-serif;font-style:normal;text-align:center;padding:0 4px}
+.emi{width:64px!important;flex:none;margin:0!important;text-align:center;font-size:30px;padding:6px!important}
+.md{position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(0,0,0,.45);z-index:50;display:none;align-items:flex-end;justify-content:center;padding:12px}
+.mb{background:var(--bg);color:var(--tx);border-radius:18px;padding:16px;width:100%;max-width:520px;max-height:82vh;overflow:auto;margin-bottom:env(safe-area-inset-bottom,0px)}
+.mb h3{margin:0 0 6px;font-size:18px}
+button.d2{background:#d33}
+#ts{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 64px);z-index:60;display:none;background:var(--tx);color:var(--bg);padding:12px 14px;border-radius:12px;text-align:center;font-weight:600}
+#dbb{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:54px;height:54px;border-radius:50%;padding:0;font-size:24px;background:var(--card);border:1px solid var(--bd);box-shadow:0 2px 10px rgba(0,0,0,.2);z-index:15;display:none}
+.cap{display:inline-block}.cap::first-letter{text-transform:uppercase}
+</style>
+</head>
+<body>
+<div id="bar"><div class="in"><div id="nav"></div><button id="cart" onclick="goShop()" aria-label="Courses">🛒<i id="bd"></i></button></div></div>
+<main id="app"></main>
+<button id="dbb" onclick="go('db')" aria-label="Base de données">💾</button>
+<div id="md" class="md" onclick="if(event.target==this)closeM()"><div class="mb" id="mb"></div></div>
+<div id="ts" onclick="this.style.display='none'"></div>
+<script>
+var KEY="recettes_v2",D={folders:[],recipes:[]},V={n:"home"},Q="";
+var EMO=["🍝","🍜","🍣","🥗","🍰","🍲","🥩","🐟","🥐","🍕","🌮","🥘","🍪","🍹","🥖","🍳"];
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function load(){
+  try{var d=JSON.parse(localStorage.getItem(KEY));if(d&&d.recipes){D=d;return}}catch(e){}
+  try{var o=JSON.parse(localStorage.getItem("recettes_v1"));if(Array.isArray(o)){D.recipes=o.map(function(r){return{id:uid(),title:r.title,fid:"",base:r.base,time:"",ing:r.ing,steps:r.steps,notes:"",fav:false}});save()}}catch(e){}
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){}}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function lines(s){return String(s||"").split("\n").filter(function(x){return x.trim()})}
+function fo(id){return D.folders.filter(function(f){return f.id==id})[0]}
+function re(id){return D.recipes.filter(function(r){return r.id==id})[0]}
+/* ---- calcul des quantités ---- */
+function parseLine(l){
+  var m=l.trim().match(/^(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:[.,]\d+)?)\s*(.*)$/);
+  if(!m)return{q:null,t:l.trim()};
+  var s=m[1],q;
+  if(s.indexOf("/")>-1){var p=s.split(/\s+/),f=p[p.length-1].split("/");q=(p.length==2?+p[0]:0)+f[0]/f[1]}
+  else q=parseFloat(s.replace(",","."));
+  return{q:q,t:m[2]}
+}
+var FR=[[.25,"¼"],[1/3,"⅓"],[.5,"½"],[2/3,"⅔"],[.75,"¾"]];
+function num(q,metric){
+  if(metric)return String(q>=10?Math.round(q):Math.round(q*10)/10).replace(".",",");
+  var w=Math.floor(q+.04),f=q-w;
+  if(Math.abs(f)<.04)return String(w);
+  f=q-Math.floor(q);w=Math.floor(q);
+  for(var i=0;i<FR.length;i++)if(Math.abs(f-FR[i][0])<.04)return (w?w:"")+FR[i][1];
+  return String(Math.round(q*100)/100).replace(".",",")
+}
+function scaled(q,t){
+  var m=t.match(/^(\S+)\s*(.*)$/),U=m?m[1]:"",rest=m?m[2]:"",u=U.toLowerCase();
+  if(u=="g"&&q>=1000){q/=1000;U="kg"}else if(u=="ml"&&q>=1000){q/=1000;U="l"}
+  else if(u=="kg"&&q<1){q*=1000;U="g"}else if(u=="l"&&q<1){q*=1000;U="ml"}
+  var metric=["g","kg","ml","l","cl"].indexOf(U.toLowerCase())>-1;
+  return{n:num(q,metric),t:(U+" "+rest).trim()}
+}
+/* ---- navigation ---- */
+function render(keep){
+  if(!D.shop)D.shop={r:[],x:[],d:{}};if(!D.shop.h)D.shop.h={};if(!D.db)D.db=seedDB();migDB();mig3();if(!D.set)D.set={sc:""};rebuildU();
+  var y=window.scrollY,a=document.getElementById("app");
+  a.innerHTML=({home:homeH,folder:folderH,recipe:recipeH,edit:editH,fedit:feditH,backup:backupH,shop:shopH,db:dbH})[V.n]();bar();
+  window.scrollTo(0,keep?y:0)
+}
+function go(n,o){V=o||{};V.n=n;render()}
+function back(){
+  if(V.from)go(V.from.n,V.from);else go("home")
+}
+/* ---- accueil ---- */
+function card(r){
+  var f=fo(r.fid);
+  return '<div class="card item" onclick="openR(\''+r.id+'\')"><div><b>'+esc(r.title)+'</b><br><small>'+(f?f.emoji+" "+esc(f.name)+" · ":"")+r.base+' pers.'+(r.time?" · "+esc(r.time):"")+'</small></div><span>'+(V.ed?'<button class="g d" onclick="event.stopPropagation();delRid(\''+r.id+'\')">🗑</button>':(r.fav?"⭐":"›"))+'</span></div>'
+}
+function list(arr){return arr.length?arr.map(card).join(""):'<div class="empty">Rien ici pour l\'instant.</div>'}
+function homeH(){
+  var h='<h1>🍳 Mes recettes</h1><input id="q" type="search" placeholder="Rechercher (nom ou ingrédient)" value="'+esc(Q)+'" oninput="srch(this.value)"><div id="res">'+homeBody()+'</div>';
+  return h
+}
+function srch(v){Q=v;document.getElementById("res").innerHTML=homeBody()}
+function homeBody(){
+  var q=Q.trim().toLowerCase();
+  if(q)return list(D.recipes.filter(function(r){return (r.title+" "+r.ing).toLowerCase().indexOf(q)>-1}));
+  var h='<div class="grid">';
+  h+='<button class="fold" onclick="go(\'folder\',{f:\'fav\'})"><span>⭐</span>Favoris<br><small>'+D.recipes.filter(function(r){return r.fav}).length+' recettes</small></button>';
+  h+='<button class="fold" onclick="go(\'folder\',{f:\'all\'})"><span>📖</span>Toutes<br><small>'+D.recipes.length+' recettes</small></button>';
+  D.folders.forEach(function(f){h+='<button class="fold" onclick="go(\'folder\',{f:\''+f.id+'\'})"><span>'+f.emoji+'</span>'+esc(f.name)+'<br><small>'+D.recipes.filter(function(r){return r.fid==f.id}).length+' recettes</small></button>'});
+  h+='</div><div class="row" style="margin-top:14px"><button class="s" onclick="go(\'fedit\',{id:\'\'})">+ Dossier</button><button onclick="newR(\'\')">+ Recette</button></div>';
+  var loose=D.recipes.filter(function(r){return !fo(r.fid)});
+  if(loose.length)h+='<div class="row"><h2>Sans dossier</h2><button class="g" onclick="tgEd()">'+(V.ed?"Terminé":"Éditer")+'</button></div>'+loose.map(card).join("");
+  h+='<div style="text-align:center;margin-top:20px"><button class="g" onclick="go(\'backup\')">Sauvegarde / restauration</button></div>';
+  return h
+}
+/* ---- dossier ---- */
+function folderH(){
+  var f=fo(V.f),t=V.f=="fav"?"⭐ Favoris":V.f=="all"?"📖 Toutes":(f?f.emoji+" "+esc(f.name):"");
+  var arr=D.recipes.filter(function(r){return V.f=="all"||(V.f=="fav"?r.fav:r.fid==V.f)});
+  var h='<div class="row"><h1 style="margin-right:auto">'+t+'</h1><button class="g" onclick="tgEd()">'+(V.ed?"Terminé":"Éditer")+'</button></div>'+list(arr);
+  h+='<div class="row" style="margin-top:12px"><button onclick="newR(\''+(f?f.id:"")+'\')">+ Recette</button>'+(f?'<button class="g" onclick="go(\'fedit\',{id:\''+f.id+'\',from:V})">Modifier le dossier</button>':"")+'</div>';
+  return h
+}
+function saveF(){
+  var n=document.getElementById("fn").value.trim();if(!n){note("Donne un nom au dossier");return}
+  var f=fo(V.id);
+  if(f){f.name=n;f.emoji=V.emoji||"📁"}else{f={id:uid(),name:n,emoji:V.emoji||"📁"};D.folders.push(f)}
+  save();go("folder",{f:f.id})
+}
+function delF(){ask("Supprimer ce dossier ? Les recettes sont conservées.","Supprimer",function(){D.recipes.forEach(function(r){if(r.fid==V.id)r.fid=""});D.folders=D.folders.filter(function(f){return f.id!=V.id});save();go("home")})}
+/* ---- recette ---- */
+function openR(id){var r=re(id);go("recipe",{id:id,cnt:r.base,ck:{},from:(V.n=="home"||V.n=="folder"||V.n=="recipe"||V.n=="shop")?V:(V.from||null)})}
+/* ---- recettes annexes ---- */
+function byT(t){return D.recipes.filter(function(x){return x.title==t})[0]}
+function pm(x){x=String(x==null?"":x).trim();var t=x.match(/^(\d+):(\d{1,2})$/);if(t)return +t[1]+ +t[2]/60;var v=parseFloat(x.replace(",","."));return isNaN(v)?0:v}
+function kids(r,n){
+  var k=n/r.base,out=[],seen={};
+  lines(r.ing).forEach(function(l){var p=parseLine(l),m=p.t.match(/^@\{([^}]+)\}/);if(!m)return;var s=byT(m[1]);if(!s||s.id==r.id)return;seen[s.id]=1;out.push({s:s,n:p.q==null?n:s.base*p.q*k})});
+  var txt=r.ing+"\n"+secs(r).map(function(x){return x.x}).join("\n")+"\n"+(r.steps||"");
+  txt.replace(/@\{([^}]+)\}/g,function(_,t){var s=byT(t);if(s&&s.id!=r.id&&!seen[s.id]){seen[s.id]=1;out.push({s:s,n:n})}});
+  return out
+}
+function annex(r0,n0){var out=[],ix={};
+  (function w(r,n,d){if(d>3)return;kids(r,n).forEach(function(c){if(c.s.id==r0.id)return;var e=ix[c.s.id];if(e)e.n+=c.n;else{e={s:c.s,n:c.n};ix[c.s.id]=e;out.push(e)}w(c.s,c.n,d+1)})})(r0,n0,0);
+  return out}
+function ingUl(r,k,pf){
+  var h='<ul class="ing">';
+  lines(r.ing).forEach(function(l,i){var c=V.ck[pf+i]?"k":"",s=scaleHTML(l,k,true);
+    h+='<li class="'+c+'" onclick="tg(\''+pf+i+'\')"><span>'+s+'</span></li>'});
+  return h+'</ul>'
+}
+function recipeH(){
+  V.open=V.open||{};
+  var r=re(V.id),f=fo(r.fid),k=V.cnt/r.base;
+  var h='<div class="row"><h1 style="margin-right:auto">'+esc(r.title)+'</h1><button class="g" style="font-size:26px" onclick="fav()">'+(r.fav?"⭐":"☆")+'</button></div>';
+  h+='<p class="mut" style="margin:-6px 0 12px">'+(f?f.emoji+" "+esc(f.name):"Sans dossier")+(r.time?" · ⏱ "+esc(r.time):"")+'</p>';
+  h+='<div class="stepper"><button onclick="chg(-1)">−</button><div style="text-align:center"><b>'+V.cnt+' personne'+(V.cnt>1?"s":"")+'</b><br><small class="mut">'+(V.cnt!=r.base?'<a onclick="V.cnt='+r.base+';render(true)" style="color:var(--ac)">remettre à '+r.base+'</a>':'recette de base')+'</small></div><button onclick="chg(1)">+</button></div>';
+  var e=D.shop.r.filter(function(x){return x.rid==r.id})[0];
+  if(e){h+='<button class="s" style="width:100%;margin-top:10px" onclick="rmShop()">☑ Dans les courses · '+e.n+' pers. <small class="mut">(toucher pour retirer)</small></button><div class="row">'+(e.n!=V.cnt?'<button class="g" onclick="updShop()">Mettre à jour : '+V.cnt+' pers.</button>':'<span></span>')+'<button class="g" onclick="go(\'shop\',{from:V})">Voir la liste ›</button></div>'}
+  else h+='<button class="s" style="width:100%;margin-top:10px" onclick="addShop()">☐ Ajouter aux courses ('+V.cnt+' pers.)</button>';
+  h+='<h2>Ingrédients</h2><div class="card">'+ingUl(r,k,"")+'</div>';
+  h+=stepsH(r,"",false,k);
+  if((r.notes||"").trim())h+='<h2>Notes</h2><div class="card">'+rich(r.notes).replace(/\n/g,"<br>")+'</div>';
+  h+=annexH(r);
+  return h+'<div class="row" style="margin-top:14px"><button class="g" onclick="go(\'edit\',{id:\''+r.id+'\',from:V.from})">Modifier</button><button class="g" onclick="dup()">Dupliquer</button><button class="g d" onclick="delR()">Supprimer</button></div>'
+}
+function rmShop(){D.shop.r=D.shop.r.filter(function(x){return x.rid!=V.id});save();render(true)}
+function stepsH(r,pf,inner,kk){
+  pf=pf||"";kk=kk||1;
+  var S=secs(r).filter(function(s){return s.t||pm(s.m)>0||lines(s.x).length});if(!S.length)return"";
+  var h='<h2'+(inner?' style="margin-top:12px"':'')+'>Préparation</h2>';
+  S.forEach(function(s,i){var k=V.id+"_"+pf+i,d=String(s.m==null?"":s.m).replace(/[^0-9,.:]/g,""),m=pm(d);
+    h+='<div class="'+(inner?'st2':'card')+'"><div class="row" style="margin-bottom:6px"><b>'+(S.length>1||s.t?(i+1)+' · ':'')+(s.t?scaleHTML(s.t,kk,false):(S.length>1?"Étape":""))+'</b>'+(m>0?'<span class="row" style="gap:6px"><button class="s" id="tm'+k+'" onclick="tmr(\''+k+'\','+m+',\''+d+'\')">'+lab(k,m,d)+'</button>'+(D.set&&D.set.sc?'<button class="s" onclick="iosT('+Math.round(m*60)+')">📲</button>':'')+'</span>':'')+'</div>'+lines(s.x).map(function(l){return'<p class="sp">'+scaleHTML(l,kk,false)+'</p>'}).join("")+'</div>'});
+  return h
+}
+var TM={},TI=null;
+function lab(k,m,d){var t=TM[k];if(!t)return"⏱ "+dsp(m)+" ▶";var x=Math.max(0,Math.ceil((t.e-Date.now())/1000));return"⏳ "+clk(x)+" ■"}
+function tmr(k,m,d){if(TM[k])delete TM[k];else TM[k]={e:Date.now()+m*60000,m:m,d:d};var el=document.getElementById("tm"+k);if(el)el.textContent=lab(k,m,d);if(!TI)TI=setInterval(upd,500)}
+function upd(){var any=false;for(var k in TM){var t=TM[k],el=document.getElementById("tm"+k);if(t.e<=Date.now()){delete TM[k];beep();if(el)el.textContent=lab(k,t.m,t.d);note("⏰ Minuteur terminé",true);continue}any=true;if(el)el.textContent=lab(k,t.m,t.d)}if(!any){clearInterval(TI);TI=null}}
+function chg(d){V.cnt=Math.max(1,V.cnt+d);V.axn={};render(true)}
+function tg(i){V.ck[i]=!V.ck[i];render(true)}
+function fav(){var r=re(V.id);r.fav=!r.fav;save();render(true)}
+function dup(){var r=re(V.id),c=JSON.parse(JSON.stringify(r));c.id=uid();c.title+=" (copie)";D.recipes.push(c);save();openR(c.id)}
+function delR(){ask("Supprimer cette recette ?","Supprimer",function(){D.recipes=D.recipes.filter(function(r){return r.id!=V.id});D.shop.r=D.shop.r.filter(function(x){return x.rid!=V.id});save();back()})}
+/* ---- utilitaires : liens @, compartiments, minuteurs ---- */
+function rich(s){return String(s==null?"":s).split(/(@\{[^}]+\})/).map(function(p){var m=p.match(/^@\{([^}]+)\}$/);if(!m)return esc(p);var r=D.recipes.filter(function(x){return x.title==m[1]})[0];return r?'<a class="lk" onclick="openR(\''+r.id+'\')">'+esc(r.title)+' ›</a>':'<span class="mut">'+esc(m[1])+'</span>'}).join("")}
+function secs(r){if(Array.isArray(r.sec))return r.sec;return lines(r.steps).length?[{t:"",m:"",x:r.steps}]:[]}
+function beep(){try{var c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator();o.connect(c.destination);o.frequency.value=880;o.start();setTimeout(function(){o.stop()},800)}catch(e){}}
+/* ---- autocomplétion @ ---- */
+var AC={};
+function norm(s){return String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/œ/g,"oe")}
+function ac(ta){
+  var sg=document.getElementById("sg_"+ta.id);if(!sg)return;
+  var p=ta.selectionStart,before=ta.value.slice(0,p),m=before.match(/@([^\s@{}]*)$/);
+  if(!m){
+    var n=before.match(/(?:^|[\s(])(\d+(?:[.,]\d+)?(?:\/\d+)?)$/),rest=ta.value.slice(p).split("\n")[0];
+    if(n&&!/^\s+\p{L}/u.test(rest)){AC={id:ta.id,s:p,e:p};sg.innerHTML=UN.map(function(u){return'<button class="s" onmousedown="event.preventDefault()" onclick="pickU(\''+u+'\')">'+u+'</button>'}).join("")}else sg.innerHTML="";
+    return}
+  var q=norm(m[1]);AC={id:ta.id,s:p-m[0].length,e:p};
+  var res=D.recipes.filter(function(r){return r.id!=V.id}).map(function(r){var t=norm(r.title);return{r:r,sc:t.indexOf(q)==0?0:(t.split(/[\s'’-]+/).some(function(w){return w.indexOf(q)==0})?1:9)}}).filter(function(x){return x.sc<9}).sort(function(a,b){return a.sc-b.sc||a.r.title.localeCompare(b.r.title)}).slice(0,6);
+  sg.innerHTML=res.length?res.map(function(x){return'<button class="s" onmousedown="event.preventDefault()" onclick="pick(\''+x.r.id+'\')">'+esc(x.r.title)+'</button>'}).join(""):'<small class="mut">Aucune recette trouvée</small>'
+}
+function pick(id){var ta=document.getElementById(AC.id),r=re(id),ins="@{"+r.title+"} ";ta.value=ta.value.slice(0,AC.s)+ins+ta.value.slice(AC.e);var c=AC.s+ins.length;ta.focus();ta.setSelectionRange(c,c);document.getElementById("sg_"+AC.id).innerHTML=""}
+/* ---- édition ---- */
+function newR(fid){go("edit",{id:"",fid:fid})}
+function collect(){var g=function(i){var e=document.getElementById(i);return e?e.value:""},d=V.draft;d.title=g("t");d.fid=g("f");d.base=g("b");d.time=g("m");d.ing=g("i");d.notes=g("n");d.sec=d.sec.map(function(s,i){return{t:g("st"+i),m:tm2(g("sh"+i),g("sm"+i),g("ss"+i)),x:g("sx"+i)}})}
+function addS(){collect();V.draft.sec.push({t:"",m:"",x:""});render(true)}
+function delS(i){collect();V.draft.sec.splice(i,1);render(true)}
+function mvS(i,d){collect();var a=V.draft.sec,j=i+d;if(j<0||j>=a.length)return;var t=a[i];a[i]=a[j];a[j]=t;render(true)}
+function editH(){
+  if(!V.draft){var r=re(V.id)||{title:"",fid:V.fid||"",base:4,time:"",ing:"",notes:""};V.draft={title:r.title,fid:r.fid,base:r.base,time:r.time||"",ing:r.ing,notes:r.notes||"",sec:secs(r).map(function(s){return{t:s.t||"",m:s.m||"",x:s.x||""}})}}
+  var d=V.draft;
+  var h='<h1>'+(V.id?"Modifier":"Nouvelle recette")+'</h1>';
+  h+='<input id="t" placeholder="Nom de la recette" value="'+esc(d.title)+'">';
+  h+='<select id="f"><option value="">Sans dossier</option>'+D.folders.map(function(f){return'<option value="'+f.id+'"'+(f.id==d.fid?" selected":"")+'>'+f.emoji+" "+esc(f.name)+'</option>'}).join("")+'</select>';
+  h+='<div class="row"><input id="b" type="number" inputmode="numeric" min="1" value="'+esc(d.base)+'"><input id="m" placeholder="Durée totale (ex. 45 min)" value="'+esc(d.time)+'"></div><p class="hint">Nombre de personnes pour lesquelles la recette est écrite · durée</p>';
+  h+='<textarea id="i" placeholder="Un ingrédient par ligne :\n200 g farine\n3 œufs\n2 @Œufs marinés" oninput="ac(this)" onkeyup="ac(this)">'+esc(d.ing)+'</textarea><div class="sg" id="sg_i"></div><p class="hint">Quantité en premier. Tape @ pour insérer une autre recette (ex. @o). Fractions acceptées (1/2, 0,5).</p>';
+  h+='<h2>Préparation</h2>'+d.sec.map(secEd).join("")+'<button class="s" style="width:100%;margin-bottom:12px" onclick="addS()">+ Étape</button>';
+  h+='<textarea id="n" style="min-height:70px" placeholder="Notes, astuces…">'+esc(d.notes)+'</textarea>';
+  return h+'<button style="width:100%" onclick="saveR()">Enregistrer</button>'
+}
+function saveR(){
+  collect();var d=V.draft,t=d.title.trim();
+  if(!t){note("Donne un nom à la recette");return}
+  var r=re(V.id)||{id:uid(),fav:false},old=r.title,isNew=!re(r.id);
+  r.title=t;r.fid=d.fid;r.base=Math.max(1,parseInt(d.base)||1);r.time=d.time.trim();r.ing=d.ing;r.notes=d.notes;
+  r.sec=d.sec.filter(function(s){return s.t.trim()||s.m||s.x.trim()});r.steps="";
+  if(isNew)D.recipes.push(r);
+  else if(old&&old!=t){var f=function(x){return String(x||"").split("@{"+old+"}").join("@{"+t+"}")};
+    D.recipes.forEach(function(q){q.ing=f(q.ing);q.notes=f(q.notes);q.steps=f(q.steps);(q.sec||[]).forEach(function(s){s.x=f(s.x)})})}
+  save();openR(r.id)
+}
+/* ---- barre de navigation + panier ---- */
+function goHome(){go("home")}
+function goFolder(id){go("folder",{f:id})}
+function goShop(){if(V.n=="shop")return;if(V.n=="edit"&&V.draft)collect();go("shop",{from:V})}
+function crumb(l,fn){return'<button class="nv" onclick="'+fn+'">'+l+'</button>'}
+function navH(){
+  var c=[];
+  if(V.n=="recipe"){
+    var r=re(V.id),f=r&&fo(r.fid);
+    if(V.from&&V.from.n=="recipe"&&re(V.from.id))c.push(crumb("‹ "+esc(re(V.from.id).title),"back()"));
+    c.push(crumb("🏠 Accueil","goHome()"));
+    if(f)c.push(crumb(f.emoji+" "+esc(f.name),"goFolder(\'"+f.id+"\')"));
+  }else if(V.n=="shop"){
+    if(V.from)c.push(crumb("‹ Retour","back()"));
+    c.push(crumb("🏠 Accueil","goHome()"));
+  }else if(V.n=="db"){c.push(crumb("🏠 Accueil","goHome()"));if(V.p)c.push(crumb("💾 Base","dbGo()"));if(V.sub)c.push(crumb(V.p=="mes"?"📏 Mesures":"🧂 Ingrédients","dbGo(\'"+V.p+"\')"))}else if(V.n=="edit"||V.n=="fedit")c.push(crumb("‹ Annuler","back()"));
+  else if(V.n!="home")c.push(crumb("🏠 Accueil","goHome()"));
+  return c.join("")
+}
+function shopLeft(){return allItems().filter(function(i){return !D.shop.d[i.key]}).length}
+function bar(){
+  document.getElementById("nav").innerHTML=navH();
+  var n=shopLeft(),b=document.getElementById("bd");b.textContent=n;b.style.display=n?"":"none";
+  document.getElementById("cart").className=V.n=="shop"?"on":"";document.getElementById("dbb").style.display=V.n=="home"?"block":"none"
+}
+/* ---- emoji libre ---- */
+var EMRE=/(\p{Regional_Indicator}{2}|\p{Extended_Pictographic}[\uFE0F\u{1F3FB}-\u{1F3FF}]*(\u200D\p{Extended_Pictographic}[\uFE0F\u{1F3FB}-\u{1F3FF}]*)*)/gu;
+function emIn(el){var v=el.value;if(!v){V.emoji="";return}var m=v.match(EMRE);if(m){V.emoji=m[m.length-1];el.value=V.emoji}else el.value=V.emoji||""}
+function feditH(){
+  var f=fo(V.id)||{name:"",emoji:EMO[0]};if(V.emoji===undefined)V.emoji=f.emoji;
+  var h='<h1>'+(V.id?"Modifier le dossier":"Nouveau dossier")+'</h1><div class="row" style="gap:10px;margin-bottom:6px"><input id="fe" class="emi" value="'+esc(V.emoji)+'" placeholder="🙂" oninput="emIn(this)" onclick="this.select()"><input id="fn" style="flex:1;min-width:0;margin:0" placeholder="Nom (ex. Japon, Desserts)" value="'+esc(V.name!==undefined?V.name:f.name)+'" oninput="V.name=this.value"></div><p class="hint">Touche la case emoji, puis le bouton 😀 / 🌐 de ton clavier pour choisir dans tout ton catalogue. Ou prends un raccourci :</p><div class="emo">';
+  EMO.forEach(function(e){h+='<button class="'+(e==V.emoji?"on":"")+'" onclick="pickE(\''+e+'\')">'+e+'</button>'});
+  h+='</div><button style="width:100%" onclick="saveF()">Enregistrer</button>';
+  if(V.id)h+='<div style="text-align:center;margin-top:14px"><button class="g d" onclick="delF()">Supprimer le dossier</button><br><small class="mut">Les recettes sont conservées, sans dossier.</small></div>';
+  return h
+}
+function pickE(e){V.name=document.getElementById("fn").value;V.emoji=e;render(true)}
+/* ---- courses : retirer une ligne ---- */
+function sig(i){return i.q==null?"n":String(Math.round(i.q*1000))}
+function delIt(j){var i=SH[j];if(i.x)D.shop.x=D.shop.x.filter(function(x){return x.id!=i.x});else D.shop.h[i.key]=sig(i);delete D.shop.d[i.key];save();render(true)}
+function unhide(){D.shop.h={};save();render(true)}
+/* ---- durée mm:ss + unités ---- */
+function hideSg(e){var t=e.target;if(t.closest&&t.closest(".sg"))return;var a=document.querySelectorAll(".sg");for(var i=0;i<a.length;i++)a[i].innerHTML=""}
+document.addEventListener("touchstart",hideSg,{passive:true});document.addEventListener("mousedown",hideSg);
+/* ---- mise à l'échelle de tous les nombres (sauf durées / °C / %) ---- */
+var NR=/(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:[.,]\d+)?)(\s?)([°º]\s?[Cc](?![\p{L}])|[°º]|%|[\p{L}.]+)?/gu;
+function pnum(x){x=x.trim();if(x.indexOf("/")>-1){var p=x.split(/\s+/),f=p[p.length-1].split("/");return(p.length==2?+p[0]:0)+f[0]/f[1]}return parseFloat(x.replace(",","."))}
+function scaleHTML(str,k,bold){
+  return String(str==null?"":str).split(/(@\{[^}]+\})/).map(function(p,i){return/^@\{[^}]+\}$/.test(p)?rich(p):scT(p,k,bold&&i==0)}).join("")
+}
+/* ---- durée h : min : sec + unités ---- */
+function dsp(m){var t=Math.round(m*60),h=Math.floor(t/3600),mm=Math.floor(t%3600/60),ss=t%60,a=[];if(h)a.push(h+"h");if(mm)a.push(mm+"min");if(ss)a.push(ss+"s");return a.join(" ")||"0min"}
+function clk(x){var h=Math.floor(x/3600),m=Math.floor(x%3600/60),s=x%60,z=function(v){return("0"+v).slice(-2)};return h?h+":"+z(m)+":"+z(s):m+":"+z(s)}
+function tm2(h,m,s){var t=(parseInt(h)||0)*3600+(parseInt(m)||0)*60+(parseInt(s)||0);if(!t)return"";var mm=Math.floor(t/60),ss=t%60;return ss?mm+":"+("0"+ss).slice(-2):String(mm)}
+function pickU(u){var ta=document.getElementById(AC.id),nx=ta.value.slice(AC.e),ins=u+(/^\s/.test(nx)?"":" ");ta.value=ta.value.slice(0,AC.s)+ins+nx;var c=AC.s+ins.length;ta.focus();ta.setSelectionRange(c,c);document.getElementById("sg_"+AC.id).innerHTML=""}
+function secEd(s,i){
+  var t=Math.round(pm(s.m)*60),hv=Math.floor(t/3600),mv=Math.floor(t%3600/60),sv=t%60,f=function(id,ph,v){return'<input id="'+id+i+'" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="'+ph+'" style="width:62px;margin:0;text-align:center" value="'+(v||"")+'">'};
+  return'<div class="card"><div class="row" style="margin-bottom:8px"><b>Étape '+(i+1)+'</b><span><button class="g" onclick="mvS('+i+',-1)">↑</button> <button class="g" onclick="mvS('+i+',1)">↓</button> <button class="g d" onclick="delS('+i+')">✕</button></span></div><input id="st'+i+'" placeholder="Titre de l’étape (ex. Le bouillon)" value="'+esc(s.t)+'"><div class="row" style="justify-content:flex-start;gap:6px;margin-bottom:8px"><span>⏱</span>'+f("sh","h",hv)+'<b>:</b>'+f("sm","min",mv)+'<b>:</b>'+f("ss","sec",sv)+'</div><textarea id="sx'+i+'" style="min-height:90px" placeholder="Détail de l’étape, une action par ligne. @ pour appeler une recette." oninput="ac(this)" onkeyup="ac(this)">'+esc(s.x)+'</textarea><div class="sg" id="sg_sx'+i+'"></div></div>'
+}
+/* ---- base de données : mesures ---- */
+function seedDB(){
+  var P=function(a,p){return a.map(function(s){return{s:s,p:p}})};
+  return{mes:{calc:P(["g","kg","cl","ml","l","c.à.s","c.à.c","u"],1),excl:P(["min","h","s","°C"],1).concat(P(["sec","mn","minute","minutes","heure","heures","seconde","secondes","°","%"],0))},
+    ing:[{id:"g1",name:"Épices",items:["sel","poivre"]},{id:"g2",name:"Sauces",items:[]},{id:"g3",name:"Ingrédients de base",items:["beurre"]},{id:"g4",name:"Huile",items:["huile"]}]}
+}
+var KU={},DU={},UN=[],RGA=/$^/;
+function ukey(s){return String(s).toLowerCase().replace(/\s/g,"").replace(/º/g,"°")}
+function rebuildU(){
+  KU={};DU={};UN=[];var ex=[];
+  D.db.mes.calc.forEach(function(u){KU[ukey(u.s)]=u.s;if(u.p)UN.push(u.s)});
+  D.db.mes.excl.forEach(function(u){var k=ukey(u.s);KU[k]=u.s;DU[k]=1;ex.push(u.s);if(u.p)UN.push(u.s)});
+  var alts=ex.sort(function(a,b){return b.length-a.length}).map(function(x){return x.replace(/[.*+?^${}()|[\]\\]/g,"\\$&").replace(/[°º]/g,"[°º]")});
+  RGA=new RegExp("^\\s*(?:-|–|à|ou)\\s*\\d+(?:[.,]\\d+)?\\s*(?:"+(alts.join("|")||"$^")+")(?![\\p{L}])","iu")
+}
+function scT(str,k,bold){
+  var out="",last=0,m;NR.lastIndex=0;
+  while((m=NR.exec(str))){
+    var st=m.index,n0=m[1],sp=m[2]||"",tok=m[3]||"",end=st+m[0].length,pre=str.charAt(st-1),raw=esc(m[0]),key="",tail="";
+    out+=esc(str.slice(last,st));last=end;
+    if(tok){key=ukey(tok);if(/^[\p{L}.]+$/u.test(tok)){var k2=key.replace(/\.+$/,"");tail=key.slice(k2.length);key=k2}}
+    if((pre&&/[\p{L}\d.,:\/]/u.test(pre))||/^:\d/.test(str.slice(end))||RGA.test(str.slice(st+n0.length))){out+=raw;continue}
+    if(DU[key]){out+=KU[key].length<=5?esc(n0+KU[key]+tail):raw;continue}
+    var q=pnum(n0)*k,u=KU[key]||"";
+    if(u=="g"&&q>=1000){q/=1000;u="kg"}else if(u=="ml"&&q>=1000){q/=1000;u="l"}else if(u=="kg"&&q<1){q*=1000;u="g"}else if(u=="l"&&q<1){q*=1000;u="ml"}
+    var ns=num(q,["g","kg","ml","l","cl"].indexOf(u)>-1),lead=bold&&!str.slice(0,st).trim();
+    if(u)out+=(lead?'<b>':'')+esc(ns+(u.length<=5?"":sp)+u)+(lead?'</b>':'')+esc(tail);
+    else out+=(lead?'<b>'+esc(ns)+'</b>':esc(ns))+esc(sp+tok)
+  }
+  return out+esc(str.slice(last))
+}
+/* ---- fenêtres (remplace confirm/alert, bloqués dans l'aperçu) ---- */
+var CB=null,TT=null;
+function openM(h){document.getElementById("mb").innerHTML=h;document.getElementById("md").style.display="flex"}
+function closeM(){document.getElementById("md").style.display="none"}
+function ask(msg,ok,fn){CB=fn;openM('<p style="margin:0 0 14px">'+esc(msg)+'</p><div class="row"><button class="s" onclick="closeM()">Annuler</button><button class="d2" onclick="var f=CB;closeM();if(f)f()">'+esc(ok)+'</button></div>')}
+function askT(msg,val,fn){CB=fn;openM('<p style="margin:0 0 10px">'+esc(msg)+'</p><input id="mi" value="'+esc(val)+'"><div class="row"><button class="s" onclick="closeM()">Annuler</button><button onclick="var v=document.getElementById(\'mi\').value.trim(),f=CB;if(v){closeM();f(v)}">OK</button></div>')}
+function note(msg,sticky){var t=document.getElementById("ts");t.textContent=msg;t.style.display="block";clearTimeout(TT);if(!sticky)TT=setTimeout(function(){t.style.display="none"},2600)}
+/* ---- édition / suppression ---- */
+function tgEd(){V.ed=!V.ed;render(true)}
+function delRid(id){var r=re(id);ask("Supprimer « "+r.title+" » ?","Supprimer",function(){D.recipes=D.recipes.filter(function(x){return x.id!=id});D.shop.r=D.shop.r.filter(function(x){return x.rid!=id});save();render(true)})}
+/* ---- recettes annexes (consultation) ---- */
+function axN(id,d){V.axn=V.axn||{};var a=annex(re(V.id),V.cnt).filter(function(x){return x.s.id==id})[0],c=V.axn[id]!==undefined?V.axn[id]:a.n;V.axn[id]=Math.max(1,Math.round(c)+d);render(true)}
+function annexH(r){
+  var A=annex(r,V.cnt);if(!A.length)return"";V.axn=V.axn||{};
+  var h='<h2>Recettes annexes</h2>';
+  A.forEach(function(a,j){var pf="a"+j+"_",id=a.s.id,nn=V.axn[id]!==undefined?V.axn[id]:a.n,b='style="width:38px;height:38px;padding:0"';
+    h+='<details class="card ax"'+(V.open[id]?' open':'')+' ontoggle="V.open[\''+id+'\']=this.open"><summary><b>'+esc(a.s.title)+'</b> <small class="mut">· '+num(nn,false)+' pers.</small></summary><div class="row" style="margin-top:10px"><span class="mut">Quantité</span><span class="row" style="gap:12px"><button class="s" '+b+' onclick="axN(\''+id+'\',-1)">−</button><b>'+num(nn,false)+' pers.</b><button class="s" '+b+' onclick="axN(\''+id+'\',1)">+</button></span></div><h2 style="margin-top:12px">Ingrédients</h2>'+ingUl(a.s,nn/a.s.base,pf)+stepsH(a.s,pf,true,nn/a.s.base)+'<div style="margin-top:10px"><a class="lk" onclick="openR(\''+id+'\')">Ouvrir la recette ›</a></div></details>'});
+  return h
+}
+/* ---- ajout aux courses : annexes + ingrédients courants ---- */
+function startAdd(rid,n,pre,redo){
+  var r=re(rid),A=annex(r,n),e=D.shop.r.filter(function(x){return x.rid==rid})[0];
+  M={rid:rid,n:n,redo:redo,entry:e,A:A,ax:{},mode:{},chk:{},flat:[]};
+  A.forEach(function(a){var id=a.s.id,v=(redo&&e&&e.ax&&e.ax[id]!==undefined)?e.ax[id]:(pre||{})[id];M.ax[id]=v!==undefined?v:Math.max(1,Math.round(a.n))});
+  if(A.length)annexM();else ingM()
+}
+
+function updShop(){var e=D.shop.r.filter(function(x){return x.rid==V.id})[0];if(e){e.n=V.cnt;save();render(true)}}
+function redo(i){var e=D.shop.r[i];startAdd(e.rid,e.n,e.ax||{},true)}
+function annexM(){
+  var b='style="width:38px;height:38px;padding:0"',h='<h3>Recettes annexes</h3><p class="mut" style="margin:0 0 12px">Pour combien de personnes ajouter chacune aux courses ? (0 = ne pas l’ajouter)</p>';
+  M.A.forEach(function(a){var id=a.s.id;h+='<div class="card row"><b>'+esc(a.s.title)+'</b><span class="row" style="gap:10px"><button class="s" '+b+' onclick="mAx(\''+id+'\',-1)">−</button><b>'+M.ax[id]+'</b><button class="s" '+b+' onclick="mAx(\''+id+'\',1)">+</button></span></div>'});
+  openM(h+'<div class="row" style="margin-top:8px"><button class="s" onclick="closeM()">Annuler</button><button onclick="ingM()">Continuer</button></div>')
+}
+function mAx(id,d){M.ax[id]=Math.max(0,M.ax[id]+d);annexM()}
+function ingM(){
+  var its=agg([{rid:M.rid,n:M.n,ax:M.ax}]),prev=(M.redo&&M.entry&&M.entry.skip)||{},G={};
+  its.forEach(function(i){var g=inGroup(i.label);if(g)(G[g]=G[g]||[]).push(i)});
+  M.G=[];M.flat=[];D.db.ing.forEach(function(g){if(G[g.id]){G[g.id].forEach(function(i){i.ix=M.flat.length;M.flat.push(i)});M.G.push({g:g,items:G[g.id]})}});
+  if(!M.G.length){if(M.redo&&!M.A.length){closeM();note("Rien à revoir pour cette recette")}else commit();return}
+  M.G.forEach(function(x){if(M.mode[x.g.id]===undefined){var sk=x.items.filter(function(i){return prev[i.key]}).length,all=sk>0&&sk<x.items.length;M.mode[x.g.id]=sk==0?"o":(sk==x.items.length?"n":"p");x.items.forEach(function(i){M.chk[i.key]=all&&!prev[i.key]})}});
+  ingR()
+}
+function ingR(){
+  var h='<h3>Ingrédients courants</h3><p class="mut" style="margin:0 0 12px">Tu en as peut-être déjà chez toi. Ajoute-les seulement si besoin.</p>';
+  M.G.forEach(function(x){var id=x.g.id,m=M.mode[id],sb=function(v,l){return'<button class="'+(m==v?'':'s')+'" style="flex:1;padding:9px 6px" onclick="mMode(\''+id+'\',\''+v+'\')">'+l+'</button>'};
+    h+='<div class="card"><b>'+esc(x.g.name)+'</b><div class="row" style="gap:6px;margin:8px 0">'+sb("o","Oui")+sb("n","Non")+sb("p","Partiel")+'</div>'+(m=="p"?'<small class="mut">Coche ce qu’il te faut acheter</small>':'')+x.items.map(function(i){return m=="p"?'<div class="row" style="justify-content:flex-start;gap:10px;padding:7px 0" onclick="mChk('+i.ix+')"><span>'+(M.chk[i.key]?"☑":"☐")+'</span><span>'+itTxt(i)+'</span></div>':'<div style="padding:5px 0;'+(m=="n"?'opacity:.45;text-decoration:line-through':'')+'">'+itTxt(i)+'</div>'}).join("")+'</div>'});
+  openM(h+'<div class="row" style="margin-top:8px"><button class="s" onclick="'+(M.A.length?'annexM()':'closeM()')+'">'+(M.A.length?'Retour':'Annuler')+'</button><button onclick="commit()">Ajouter à la liste</button></div>')
+}
+function mMode(id,v){M.mode[id]=v;ingR()}
+function mChk(ix){var k=M.flat[ix].key;M.chk[k]=!M.chk[k];ingR()}
+function commit(){
+  var sk={};(M.G||[]).forEach(function(x){var m=M.mode[x.g.id];x.items.forEach(function(i){if(m=="n"||(m=="p"&&!M.chk[i.key]))sk[i.key]=1})});
+  var e=D.shop.r.filter(function(x){return x.rid==M.rid})[0];
+  if(e){e.n=M.n;e.ax=M.ax;e.skip=sk}else D.shop.r.push({id:uid(),rid:M.rid,n:M.n,ax:M.ax,skip:sk});
+  save();closeM();render(true);note("🛒 Ajouté aux courses")
+}
+/* ---- vue base de données ---- */
+function dbGo(p,sub){V.p=p;V.sub=sub;render()}
+function nbI(){var n=0;D.db.ing.forEach(function(g){n+=g.items.length});return n}
+function dbH(){
+  var d=D.db,s=V.sub,h="",inp=function(ph,fn){return'<div class="row" style="margin-bottom:10px"><input id="ni" style="margin:0" placeholder="'+ph+'" onkeydown="if(event.key==\'Enter\')'+fn+'()"><button onclick="'+fn+'()">+</button></div>'};
+  if(!V.p)return'<h1>💾 Base de données</h1><p class="mut">Tes réglages : les unités et tes ingrédients courants.</p><div class="grid"><button class="fold" onclick="dbGo(\'mes\')"><span>📏</span>Mesures<br><small>'+(d.mes.calc.length+d.mes.excl.length)+' unités</small></button><button class="fold" onclick="dbGo(\'ing\')"><span>🧂</span>Ingrédients<br><small>'+nbI()+' ingrédients</small></button><button class="fold" onclick="dbGo(\'set\')"><span>⚙️</span>Réglages<br><small>Chrono iPhone</small></button></div>';
+  if(V.p=="mes"&&!s)return'<h1>📏 Mesures</h1><div class="grid"><button class="fold" onclick="dbGo(\'mes\',\'calc\')"><span>🧮</span>Mesures calculées<br><small>'+d.mes.calc.length+' unités</small></button><button class="fold" onclick="dbGo(\'mes\',\'excl\')"><span>🔒</span>Mesures exclues<br><small>'+d.mes.excl.length+' unités</small></button></div><p class="hint" style="margin-top:12px">Calculées : les nombres suivis de ces unités sont recalculés quand tu changes le nombre de personnes. Exclues : jamais modifiés (durées, températures…).</p>';
+  if(V.p=="mes"){
+    h='<h1>'+(s=="calc"?"🧮 Mesures calculées":"🔒 Mesures exclues")+'</h1>'+inp("Nouvelle unité (ex. cm, tasse)","uAdd");
+    d.mes[s].forEach(function(u,i){h+='<div class="card item"><b style="font-size:18px">'+esc(u.s)+'</b><span class="row" style="gap:2px"><button class="g" onclick="uP('+i+')">'+(u.p?"💬":"🚫")+'</button><button class="g" onclick="uMv('+i+')">→ '+(s=="calc"?"exclues":"calculées")+'</button><button class="g d" onclick="uDel('+i+')">✕</button></span></div>'});
+    return h+'<p class="hint">💬 = proposée en suggestion après un nombre · 🚫 = non proposée.</p>'
+  }
+  if(V.p=="set")return setH();
+  if(!s){
+    h='<h1>🧂 Ingrédients</h1><p class="hint">Un ingrédient rangé ici (sel, huile…) déclenche une question quand tu ajoutes une recette aux courses.</p>';
+    d.ing.forEach(function(g){h+='<div class="card item" onclick="dbGo(\'ing\',\''+g.id+'\')"><div><b>'+esc(g.name)+'</b><br><small>'+g.items.length+' ingrédient'+(g.items.length>1?"s":"")+'</small></div><span>›</span></div>'});
+    return h+inp("Nouveau dossier (ex. Conserves)","gAdd")
+  }
+  var g=d.ing.filter(function(x){return x.id==s})[0];if(!g){V.sub=undefined;return dbH()}
+  h='<h1>'+esc(g.name)+'</h1>'+inp("Ajouter un ingrédient (ex. paprika)","iAdd");
+  g.items.forEach(function(x,i){h+='<div class="card item"><span class="cap">'+esc(x)+'</span><span class="row" style="gap:2px"><button class="g" onclick="iQ('+i+')">'+(KQ(x)?"📏":"🏷️")+'</button><button class="g d" onclick="iDel('+i+')">✕</button></span></div>'});
+  return h+'<p class="hint">📏 = garde la quantité dans les courses · 🏷️ = juste le nom (ex. « saké » au lieu de « 3 c.à.s de saké »).</p><div class="row" style="margin-top:12px"><button class="g" onclick="gRen()">Renommer</button><button class="g d" onclick="gDel()">Supprimer le dossier</button></div>'
+}
+function uAdd(){var sym=document.getElementById("ni").value.replace(/[^\p{L}.°º%]/gu,"");if(!sym){note("Écris une unité (lettres uniquement)");return}
+  var k=ukey(sym);if(D.db.mes.calc.concat(D.db.mes.excl).some(function(u){return ukey(u.s)==k})){note("Cette unité existe déjà");return}
+  D.db.mes[V.sub].push({s:sym,p:1});save();render(true)}
+function uP(i){var u=D.db.mes[V.sub][i];u.p=u.p?0:1;save();render(true)}
+function uMv(i){var f=V.sub,t=f=="calc"?"excl":"calc";D.db.mes[t].push(D.db.mes[f].splice(i,1)[0]);save();render(true)}
+function uDel(i){D.db.mes[V.sub].splice(i,1);save();render(true)}
+function grp(){return D.db.ing.filter(function(x){return x.id==V.sub})[0]}
+function gAdd(){var n=document.getElementById("ni").value.trim();if(!n)return;D.db.ing.push({id:uid(),name:n,items:[]});save();render(true)}
+function gRen(){var g=grp();askT("Nouveau nom du dossier",g.name,function(v){g.name=v;save();render(true)})}
+function gDel(){var g=grp();ask("Supprimer le dossier « "+g.name+" » ?","Supprimer",function(){D.db.ing=D.db.ing.filter(function(x){return x!==g});save();dbGo("ing")})}
+function iAdd(){var v=document.getElementById("ni").value.trim().toLowerCase();if(!v)return;
+  if(D.db.ing.some(function(g){return g.items.some(function(x){return tkey(x)==tkey(v)})})){note("Déjà présent dans la base");return}
+  grp().items.push(v);save();render(true)}
+function iDel(i){grp().items.splice(i,1);save();render(true)}
+/* ---- détection tolérante (accents, casse, pluriels, « de », ordre) ---- */
+var STW={de:1,d:1,du:1,des:1,la:1,le:1,les:1,l:1,en:1,a:1,au:1,aux:1,et:1,un:1,une:1};
+function tk(s){return norm(s).split(/[^a-z0-9]+/).filter(function(w){return w&&!STW[w]}).map(function(w){return w.length>3&&w.slice(-1)=="s"?w.slice(0,-1):w})}
+function tkey(s){return tk(s).sort().join(" ")}
+/* ---- remplissage de la base (une seule fois) ---- */
+function migDB(){
+  var d=D.db;if(d.v>=2)return;
+  var S=[["Huile",["huile d'olive","huile neutre","huile de sésame","huile de pépin de raisin"]],
+  ["Ingrédients de base",["sucre","sucre glace","sucre brun","cassonade","sucre roux","sucre de palme","sucre candi","miel","beurre","beurre salé","margarine","farine","fécule de pomme de terre","fécule de maïs","fécule de tapioca"]],
+  ["Épices",["sel","curcuma","cumin","curry","paprika","paprika fumé","graines de cumin","fenouil","ail en poudre","clou de girofle","safran","origan","piment d'espelette","gochugaru","fenugrec","noix de muscade","gingembre en poudre","garam masala","poivre","poivre blanc","poivre du sichuan","graines de sésame","badiane","cannelle","cardamome","graines de coriandre"]],
+  ["Sauces",["mayonnaise","ketchup","moutarde","moutarde à l'ancienne","kewpie mayo","sauce huître","sauce champignons","sauce poisson","nuoc mam","vinaigre de riz","vinaigre","vinaigre de vin","vinaigre de pommes","vinaigre blanc","vinaigre balsamique","vinaigre de cidre","vinaigre noir","vin blanc","vin rouge","vin de riz","alcool de shaoxing","sauce soja foncée","sauce worcestershire","sauce nem","sauce aigre douce","jus de tamarin","sauce ponzu","sauce soja","jus de yuzu","sauce teriyaki","wasabi","sauce tsuyu","saké","mirin","sauce tomate"]],
+  ["Condiment asiatique",["kombu","shiitakes séchés","katsuobushi","nori","dashi","miso blanc","miso rouge","gochujang","soja fermenté","crevettes séchées","radis salés"]]];
+  S.forEach(function(x){
+    var g=d.ing.filter(function(y){return norm(y.name)==norm(x[0])})[0];
+    if(!g){g={id:uid(),name:x[0],items:[]};d.ing.push(g)}
+    x[1].forEach(function(it){var k=tkey(it);if(!d.ing.some(function(h){return h.items.some(function(z){return tkey(z)==k})}))g.items.push(it)})
+  });
+  d.v=2;save()
+}
+/* ---- ingrédients de la base : nom seul (sauf sucres / beurre / margarine) ---- */
+function dbBest(label){
+  var L={},best=null,sc=0;tk(label).forEach(function(w){L[w]=1});
+  D.db.ing.forEach(function(G){G.items.forEach(function(it){var t=tk(it);if(t.length>sc&&t.every(function(w){return L[w]})){sc=t.length;best={g:G.id,it:it}}})});
+  return best
+}
+function inGroup(label){var b=dbBest(label);return b?b.g:null}
+function KQ(it){return !!(D.db.kq&&D.db.kq[tkey(it)])}
+var QRE=/^(?:(?:pincées?|gousses?|cuillères?|cuillerées?|verres?|gouttes?|traits?|filets?|sachets?|brins?|branches?|feuilles?|pointes?|bouchons?|poignées?|morceaux?|tranches?|bâtons?)(?=\s|$)\s*(?:à\s+(?:soupe|café|dessert|s|c)\.?\s*)?)?(?:d'|d’|de\s+|du\s+|des\s+)?/iu;
+function bare(t){
+  var m=t.match(/^(\S+)\s*(.*)$/),r=t;
+  if(m&&KU[ukey(m[1].replace(/\.+$/,""))])r=m[2];
+  r=r.replace(QRE,"").trim();
+  return r||t
+}
+function mig3(){
+  var d=D.db;if(d.v>=3)return;d.kq=d.kq||{};
+  ["sucre","sucre glace","sucre brun","cassonade","sucre roux","sucre de palme","sucre candi","beurre","beurre salé","margarine"].forEach(function(x){d.kq[tkey(x)]=1});
+  d.v=3;save()
+}
+function iQ(i){var k=tkey(grp().items[i]);if(D.db.kq[k])delete D.db.kq[k];else D.db.kq[k]=1;save();render(true)}
+/* ---- partage de la liste ---- */
+function itPlain(i){return itTxt(i).replace(/<[^>]+>/g,"").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"')}
+function shareText(){
+  var a=allItems().filter(function(i){return !D.shop.d[i.key]});if(!a.length)return"";
+  return"Courses "+new Date().toLocaleDateString("fr-FR",{day:"numeric",month:"long"})+"\n"+a.map(itPlain).join("\n")
+}
+function copyTxt(t){var ta=document.createElement("textarea");ta.value=t;ta.style.cssText="position:fixed;left:-9999px;top:0";document.body.appendChild(ta);ta.select();try{ta.setSelectionRange(0,99999)}catch(e){}var ok=false;try{ok=document.execCommand("copy")}catch(e){}document.body.removeChild(ta);return ok}
+function openLink(u){var a=document.createElement("a");a.href=u;document.body.appendChild(a);a.click();document.body.removeChild(a)}
+function goNotes(){
+  var u="mobilenotes://",w=null;
+  try{w=window.open(u,"_blank")}catch(e){}
+  if(!w){try{var a=document.createElement("a");a.href=u;a.target="_top";a.rel="noopener";document.body.appendChild(a);a.click();document.body.removeChild(a)}catch(e){}}
+}
+function shareL(){
+  var t=shareText();if(!t){note("Rien à envoyer : tout est déjà dans le panier");return}
+  if(copyTxt(t)){note("✓ Liste copiée : colle-la dans Notes");goNotes()}
+  else openM('<h3>Copie la liste</h3><p class="mut" style="margin:0 0 8px">Sélectionne le texte, copie-le puis colle-le dans Notes.</p><textarea id="shx" readonly style="min-height:170px">'+esc(t)+'</textarea><button style="width:100%" onclick="closeM()">Fermer</button>')
+}
+/* ---- chrono de l'Horloge iPhone (via Raccourcis) ---- */
+function iosT(sec,nm){var n=(nm||D.set.sc||"").trim();if(!n)return;var a=document.createElement("a");a.href="shortcuts://run-shortcut?name="+encodeURIComponent(n)+"&input=text&text="+Math.round(sec);document.body.appendChild(a);a.click();document.body.removeChild(a)}
+function scSave(){D.set.sc=document.getElementById("sc").value.trim();save();note(D.set.sc?"Enregistré : le bouton 📲 apparaît sur les étapes":"Désactivé");render(true)}
+function scTest(){iosT(10,document.getElementById("sc").value)}
+function scOff(){D.set.sc="";save();render(true)}
+function setH(){
+  return'<h1>⚙️ Réglages</h1><h2>Minuteur de l’Horloge iPhone</h2><div class="card"><p style="margin:0 0 8px">iOS ne laisse pas une page web lancer l’Horloge directement. On passe par l’appli <b>Raccourcis</b> :</p><ol><li>Raccourcis → <b>+</b>, nomme-le <b>Minuteur</b></li><li>Ajoute l’action <b>Obtenir des nombres à partir de</b> « Entrée du raccourci »</li><li>Ajoute <b>Démarrer le minuteur</b> : durée = variable « Nombres », unité <b>secondes</b></li></ol></div><input id="sc" placeholder="Nom du raccourci" value="'+esc(D.set.sc||"Minuteur")+'"><div class="row"><button class="s" onclick="scTest()">Tester (10 s)</button><button onclick="scSave()">Enregistrer</button></div>'+(D.set.sc?'<div style="text-align:center;margin-top:10px"><button class="g d" onclick="scOff()">Désactiver</button></div>':'')+'<p class="hint">Une fois enregistré, un bouton 📲 apparaît à côté du minuteur de chaque étape.</p>'
+}
+/* ---- liste de courses ---- */
+function agg(ents){
+  var CUR=null,VIS={},M={},O=[],F={g:1,kg:1000,ml:1,cl:10,l:1000};
+  function add(q,t){
+    var m=t.match(/^(\S+)\s*(.*)$/),u=m?m[1].toLowerCase():"",nm=m?m[2]:"",f=F.hasOwnProperty(u)?F[u]:0,key,unit="",lb=t;
+    if(q!=null&&f&&nm.trim()){unit=(u=="g"||u=="kg")?"g":"ml";q=q*f;lb=nm;key=unit+"|"+norm(nm)}
+    else key=(q==null?"n|":"c|")+norm(t);
+    var hit=dbBest(t);if(hit&&!KQ(hit.it)){var b0=bare(t);q=null;unit="";lb=b0;key="n|"+tkey(b0)}
+    if(CUR&&CUR.skip&&CUR.skip[key])return;
+    if(!M[key]){M[key]={key:key,q:q,unit:unit,label:lb};O.push(key)}
+    else if(q!=null)M[key].q=(M[key].q||0)+q
+  }
+  function walk(rid,n,d){var r=re(rid);if(!r||d>3)return;var k=n/r.base;
+    lines(r.ing).forEach(function(l){var p=parseLine(l),m=p.t.match(/^@\{([^}]+)\}/);if(m&&byT(m[1]))return;add(p.q==null?null:p.q*k,p.t)});
+    kids(r,n).forEach(function(c){var id=c.s.id,nn=c.n,ax=CUR&&CUR.ax;if(ax&&ax[id]!==undefined){if(VIS[id])return;VIS[id]=1;nn=ax[id];if(!(nn>0))return}walk(id,nn,d+1)})}
+  (ents||D.shop.r).forEach(function(e){CUR=e;VIS={};walk(e.rid,e.n,0)});
+  return O.map(function(k){return M[k]})
+}
+function allItems(){return agg().filter(function(i){return D.shop.h[i.key]!==sig(i)}).concat(D.shop.x.map(function(x){return{key:"x|"+x.id,label:x.t,q:null,unit:"",x:x.id}}))}
+function shopCnt(){var a=allItems();if(!a.length)return"Liste vide";return a.filter(function(i){return !D.shop.d[i.key]}).length+" à prendre"}
+function itTxt(i){
+  if(i.unit){var s=scaled(i.q,i.unit+" "+i.label);var m=s.t.match(/^(\S+)\s*(.*)$/);return'<b>'+s.n+m[1]+'</b> '+esc(m[2])}
+  if(i.q!=null){var mm=i.label.match(/^(\S+)\s*(.*)$/),uk=mm&&KU[ukey(mm[1].replace(/\.+$/,""))];return uk&&uk.length<=5?'<b>'+num(i.q,false)+uk+'</b> '+esc(mm[2]):'<b>'+num(i.q,false)+'</b> '+esc(i.label)}
+  return esc(i.label)
+}
+var SH=[];
+function shopH(){
+  var S=D.shop;S.r=S.r.filter(function(e){return re(e.rid)});
+  var all=allItems();SH=all;
+  var nd=all.filter(function(i){return S.d[i.key]}).length,pc=all.length?Math.round(nd*100/all.length):0;
+  var h='<h1>🛒 Courses</h1><h2>Recettes ('+S.r.length+')</h2>';
+  if(!S.r.length)h+='<div class="empty" style="padding:12px 0">Ouvre une recette et appuie sur « Ajouter aux courses ».</div>';
+  S.r.forEach(function(e,i){var r=re(e.rid),A=annex(r,e.n),b='style="width:38px;height:38px;padding:0"';
+    h+='<div class="card"><div class="row"><b class="lk" onclick="openR(\''+r.id+'\')">'+esc(r.title)+'</b><span><button class="g" onclick="redo('+i+')">Revoir</button><button class="g d" onclick="shDel('+i+')">✕</button></span></div><div class="row" style="margin-top:6px"><span class="mut">Pour</span><span class="row" style="gap:12px"><button class="s" '+b+' onclick="shN('+i+',-1)">−</button><b>'+e.n+' pers.</b><button class="s" '+b+' onclick="shN('+i+',1)">+</button></span></div>'+(A.length?'<small class="mut">Inclut : '+A.map(function(a){return esc(a.s.title)}).join(', ')+'</small>':'')+'</div>'});
+  h+='<div class="row"><h2>Articles · '+nd+' / '+all.length+'</h2><button class="g" onclick="shareL()">📝 Vers Notes</button></div><div class="bar"><i style="width:'+pc+'%"></i></div>';
+  h+='<div class="row" style="margin-bottom:12px"><input id="xi" style="margin:0" placeholder="Ajouter un article (ex. Sopalin)" onkeydown="if(event.key==\'Enter\')xAdd()"><button onclick="xAdd()">+</button></div>';
+  function ul(done){
+    var s="";all.forEach(function(i,j){if(!!S.d[i.key]!=done)return;
+      s+='<li class="'+(done?"k":"")+'" onclick="chk('+j+')"><span>'+itTxt(i)+'</span>'+'<button class="g" style="margin-left:auto;padding:0 6px;color:var(--mut);font-size:18px" onclick="event.stopPropagation();delIt('+j+')">✕</button>'+'</li>'});
+    return s?'<div class="card"><ul class="ing">'+s+'</ul></div>':""
+  }
+  h+=ul(false);
+  if(all.length&&nd==all.length)h+='<div class="empty" style="padding:10px 0">✅ Tout est dans le panier !</div>';
+  var d=ul(true);if(d)h+='<h2>Dans le panier</h2>'+d;
+  if(all.length||S.r.length)h+='<div class="row" style="margin-top:10px"><button class="g" onclick="unck()">Tout décocher</button>'+(Object.keys(D.shop.h).length?'<button class="g" onclick="unhide()">Réafficher</button>':'')+'<button class="g d" onclick="clr()">Vider la liste</button></div>';
+  return h
+}
+function chk(j){var k=SH[j].key,d=D.shop.d;if(d[k])delete d[k];else d[k]=true;save();render(true)}
+function xAdd(){var v=document.getElementById("xi").value.trim();if(!v)return;D.shop.x.push({id:uid(),t:v});save();render(true)}
+function xDel(id){D.shop.x=D.shop.x.filter(function(x){return x.id!=id});save();render(true)}
+function shN(i,d){var e=D.shop.r[i];e.n=Math.max(1,e.n+d);save();render(true)}
+function shDel(i){D.shop.r.splice(i,1);save();render(true)}
+function unck(){D.shop.d={};save();render(true)}
+function clr(){ask("Vider la liste de courses ?","Vider",function(){D.shop={r:[],x:[],d:{},h:{}};save();render(true)})}
+function addShop(){startAdd(V.id,V.cnt,V.axn||{},false)}
+/* ---- sauvegarde ---- */
+function backupH(){
+  return '<h1>Sauvegarde</h1><p class="mut">Copie ce texte et garde-le dans tes notes pour sauvegarder toutes tes recettes. Pour restaurer, colle-le dans la case et appuie sur Restaurer.</p><textarea id="bk" style="min-height:220px;font-size:12px">'+esc(JSON.stringify(D))+'</textarea><div class="row"><button class="s" onclick="cp()">Copier</button><button onclick="rest()">Restaurer</button></div>'
+}
+function cp(){var t=document.getElementById("bk");t.select();try{navigator.clipboard.writeText(t.value)}catch(e){try{document.execCommand("copy")}catch(e2){}}}
+function rest(){
+  var d;try{d=JSON.parse(document.getElementById("bk").value);if(!d.recipes||!d.folders)throw 0}catch(e){note("Texte de sauvegarde invalide");return}
+  ask("Remplacer toutes les recettes actuelles ?","Remplacer",function(){D=d;save();go("home")})
+}
+load();render();
+if("serviceWorker" in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(function(){});
+</script>
+</body>
+</html>
